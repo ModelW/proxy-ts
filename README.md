@@ -13,10 +13,20 @@ To set up this proxy we have to declare a middleware folder inside the server fo
 declare the next structure.
 ```vue
 import proxyEventHandler from "@model-w/proxy-ts"
+import { createProxyMiddleware } from "http-proxy-middleware";
 
-const config = useRuntimeConfig();
 export default defineEventHandler(
-    (event) => proxyEventHandler(config, event)
+    (event) => {
+        const config = useRuntimeConfig();
+        const proxy = createProxyMiddleware(
+            ["/back", "/cms"],
+            {
+                target: config.apiURL,
+                changeOrigin: true,
+            }
+        );
+        proxyEventHandler(config, event, proxy)
+    }
 );
 
 

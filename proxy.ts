@@ -38,13 +38,7 @@ function getFromApi(path: string, req: any) {
 }
 
 function proxyEventHandler (config: any, event: any) {
-    const proxy = createProxyMiddleware(
-        ["/back", "/cms"],
-        {
-            target: config.apiURL,
-            changeOrigin: true,
-        }
-    );
+
     return new Promise((resolve, reject) => {
         const dummyUrl = new URL("http://localhost" + event.path);
         const path = dummyUrl.pathname;
