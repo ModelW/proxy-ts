@@ -1,0 +1,32 @@
+{
+  "name": "@model-w/proxy-ts",
+  "version": "0.1.0",
+  "description": "Event Handler Proxy to make the redirections from Vue3 templates to the ServerTemplatedComponent render",
+  "main": "proxy.ts",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ModelW/proxy-ts.git"
+  },
+  "keywords": [
+    "vue3",
+    "nuxt3",
+    "wagtail",
+    "modelw"
+  ],
+  "author": "Rémy Sanchez (@xowap)",
+  "license": "WTFPL",
+  "bugs": {
+    "url": "https://github.com/ModelW/proxy-ts/issues"
+  },
+  "homepage": "https://github.com/ModelW/proxy-ts#readme",
+  "contributors": [
+    "Laurent Treguier",
+    "Ivan Lorenzo"
+  ],
+  "dependencies": {
+    "http-proxy-middleware": "^2.0.6"
+  }
+}
