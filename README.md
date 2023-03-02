@@ -12,12 +12,13 @@ npm i @model-w/axios
 To set up this proxy we have to declare a middleware folder inside the server folder of nuxt and then inside,
 declare the next structure.
 ```vue
-import proxy from '@model-w/proxy'
+import proxyEventHandler from "@model-w/proxy-ts"
 
+const config = useRuntimeConfig();
 export default defineEventHandler(
-    const config = useRuntimeConfig();
-    proxyEventHandler(config, event)
-)
+    (event) => proxyEventHandler(config, event)
+);
+
 
 ```
 

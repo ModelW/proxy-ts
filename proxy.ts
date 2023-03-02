@@ -65,3 +65,4 @@ function proxyEventHandler (config: any, event: any) {
         }
     });
 }
+export default proxyEventHandler;
