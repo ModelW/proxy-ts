@@ -1,6 +1,6 @@
 {
   "name": "@model-w/proxy-ts",
-  "version": "0.1.2",
+  "version": "0.2.0",
   "description": "Event Handler Proxy to make the redirections from Vue3 templates to the ServerTemplatedComponent render",
   "main": "proxy.ts",
   "scripts": {

@@ -1,5 +1,3 @@
-import { createProxyMiddleware } from "http-proxy-middleware";
-
 /**
  * This function decides if a request should be proxied to the API or not. Which
  * is:
@@ -18,41 +16,35 @@ import { createProxyMiddleware } from "http-proxy-middleware";
  * An optimization in production is to configure the load balancer to always
  * send requests targeting /back to the API.
  */
-function getFromApi(path: string, req: any) {
+function getFromApi(path, req) {
     if (req.headers["x-reach-api"]) {
         return true;
     }
-
-    const prefixes = ["cms", "back"].join("|");
-
-    if (!path.match(new RegExp(`^/(${prefixes})(/|$)`))) {
+    let prefixes = ["cms", "back"].join("|");
+    if (!path.match(new RegExp("^/(".concat(prefixes, ")(/|$)")))) {
         return false;
     }
-
-    const isPreviewEdit = /^\/cms\/pages\/[^/]+\/edit\/preview\/$/.test(path);
-    const isPreviewAdd =
-        /^\/cms\/pages\/add\/[^/]+\/[^/]+\/[^/]+\/preview\/$/.test(path);
-    const isPreview = isPreviewEdit || isPreviewAdd;
-
+    let isPreviewEdit = /^\/cms\/pages\/[^/]+\/edit\/preview\/$/.test(path);
+    let isPreviewAdd = /^\/cms\/pages\/add\/[^/]+\/[^/]+\/[^/]+\/preview\/$/.test(path);
+    let isPreview = isPreviewEdit || isPreviewAdd;
     return !(isPreview && ["HEAD", "OPTIONS", "GET"].includes(req.method));
 }
-
-function proxyEventHandler (config: any, event: any) {
-
-    return new Promise((resolve, reject) => {
-        const dummyUrl = new URL("http://localhost" + event.path);
-        const path = dummyUrl.pathname;
-
+function proxyEventHandler(config, event, proxy) {
+    let dummyUrl = new URL(config.apiURL + event.path);
+    let path = dummyUrl.pathname;
+    return new Promise(function (resolve, reject) {
         if (getFromApi(path, event.node.req)) {
             // @ts-ignore
-            proxy(event.node.req, event.node.res, (err) => {
+            proxy(event.node.req, event.node.res, function (err) {
                 if (err) {
                     reject(err);
-                } else {
+                }
+                else {
                     resolve(undefined);
                 }
             });
-        } else {
+        }
+        else {
             // Sending undefined is the only way for things to proceed smoothly
             // Sending null or anything else doesn't work
             resolve(undefined);
