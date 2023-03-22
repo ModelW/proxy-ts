@@ -5,31 +5,14 @@ They are going to work together in the runtime and lifecycle of Nuxt3 applicatio
 Vue3 files inside Wagtail Django Framework
 
 ```bash
-npm i @model-w/axios
+npm i @model-w/proxy
 ```
 
 ## Installation
-To set up this proxy we have to declare a middleware folder inside the server folder of nuxt and then inside,
-declare the next structure.
-```vue
-import proxyEventHandler from "@model-w/proxy-ts"
-import { createProxyMiddleware } from "http-proxy-middleware";
+To set up this proxy we need to add the proxy to the `nuxt.config.ts` inside the module array:
 
-export default defineEventHandler(
-    (event) => {
-        const config = useRuntimeConfig();
-        const proxy = createProxyMiddleware(
-            ["/back", "/cms"],
-            {
-                target: config.apiURL,
-                changeOrigin: true,
-            }
-        );
-        proxyEventHandler(config, event, proxy)
-    }
-);
-
-
+```typescript
+    module: ["@model-w/proxy"]
 ```
 
 With all these set up it must be working and redirecting all the stuff necessary to render Vue templates.
