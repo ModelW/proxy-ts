@@ -1,6 +1,6 @@
 {
   "name": "@model-w/proxy",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Event Handler Proxy to make the redirections from Vue3 templates to the ServerTemplatedComponent render",
   "repository": {
     "type": "git",
@@ -24,6 +24,9 @@
   "files": [
     "dist"
   ],
+  "engines": {
+    "node": ">=16.0.0"
+  },
   "scripts": {
     "prepack": "nuxt-module-build",
     "dev": "nuxi dev playground",
