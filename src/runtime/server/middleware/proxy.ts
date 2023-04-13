@@ -43,7 +43,7 @@ function getFromApi(path: string, req: any) {
     return !(isPreview && ["HEAD", "OPTIONS", "GET"].includes(req.method));
 }
 
-const proxy = createProxyMiddleware([config.backAlias , config.cmsAlias], {
+const proxy = createProxyMiddleware(["/" + config.backAlias, "/" + config.cmsAlias], {
     target: config.apiURL,
     changeOrigin: true,
 });
