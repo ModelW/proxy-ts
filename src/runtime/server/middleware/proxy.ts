@@ -33,8 +33,8 @@ function getFromApi(path: string, req: any) {
         return false;
     }
 
-    const previewEditRegex = new RegExp('/^/' + config.cmsAlias + '/pages/[^/]+/edit/preview/$/')
-    const previewAddRegex = new RegExp('/^/'+ config.cmsAlias +'/pages/add/[^/]+/[^/]+/[^/]+/preview/$/')
+    const previewEditRegex = new RegExp(`^/${config.cmsAlias}/pages/[^/]+/edit/preview/$`);
+    const previewAddRegex = new RegExp(`^/${ config.cmsAlias}/pages/add/[^/]+/[^/]+/[^/]+/preview/$`);
 
     const isPreviewEdit = previewEditRegex.test(path);
     const isPreviewAdd = previewAddRegex.test(path);
