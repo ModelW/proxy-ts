@@ -1,6 +1,6 @@
 import { createProxyMiddleware } from "http-proxy-middleware";
 import { defineEventHandler } from "h3";
-import {useRuntimeConfig} from "#imports";
+import { useRuntimeConfig } from "#imports";
 
 /**
  * This function decides if a request should be proxied to the API or not. Which
@@ -20,27 +20,30 @@ import {useRuntimeConfig} from "#imports";
  * An optimization in production is to configure the load balancer to always
  * send requests targeting /back to the API.
  */
+const config = useRuntimeConfig();
+
 function getFromApi(path: string, req: any) {
     if (req.headers["x-reach-api"]) {
         return true;
     }
 
-    const prefixes = ["cms", "back"].join("|");
+    const prefixes = [ config.backAlias , config.cmsAlias ].join("|");
 
     if (!path.match(new RegExp(`^/(${prefixes})(/|$)`))) {
         return false;
     }
 
-    const isPreviewEdit = /^\/cms\/pages\/[^/]+\/edit\/preview\/$/.test(path);
-    const isPreviewAdd =
-        /^\/cms\/pages\/add\/[^/]+\/[^/]+\/[^/]+\/preview\/$/.test(path);
+    const previewEditRegex = new RegExp('/^/' + config.cmsAlias + '/pages/[^/]+/edit/preview/$/')
+    const previewAddRegex = new RegExp('/^/'+ config.cmsAlias +'/pages/add/[^/]+/[^/]+/[^/]+/preview/$/')
+
+    const isPreviewEdit = previewEditRegex.test(path);
+    const isPreviewAdd = previewAddRegex.test(path);
     const isPreview = isPreviewEdit || isPreviewAdd;
 
     return !(isPreview && ["HEAD", "OPTIONS", "GET"].includes(req.method));
 }
 
-const config = useRuntimeConfig();
-const proxy = createProxyMiddleware(["/back", "/cms"], {
+const proxy = createProxyMiddleware([config.backAlias , config.cmsAlias], {
     target: config.apiURL,
     changeOrigin: true,
 });
