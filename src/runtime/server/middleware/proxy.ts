@@ -1,6 +1,5 @@
 import { createProxyMiddleware } from "http-proxy-middleware";
 import { defineEventHandler } from "h3";
-import { useRuntimeConfig } from "#imports";
 
 /**
  * This function decides if a request should be proxied to the API or not. Which
@@ -23,50 +22,57 @@ import { useRuntimeConfig } from "#imports";
 const config = useRuntimeConfig();
 
 function getFromApi(path: string, req: any) {
-    if (req.headers["x-reach-api"]) {
-        return true;
-    }
+  if (req.headers["x-reach-api"]) {
+    return true;
+  }
 
-    const prefixes = [ config.backAlias , config.cmsAlias ].join("|");
+  const prefixes = [config.backAlias, config.cmsAlias].join("|");
 
-    if (!path.match(new RegExp(`^/(${prefixes})(/|$)`))) {
-        return false;
-    }
+  if (!path.match(new RegExp(`^/(${prefixes})(/|$)`))) {
+    return false;
+  }
 
-    const previewEditRegex = new RegExp(`^/${config.cmsAlias}/pages/[^/]+/edit/preview/$`);
-    const previewAddRegex = new RegExp(`^/${ config.cmsAlias}/pages/add/[^/]+/[^/]+/[^/]+/preview/$`);
+  const previewEditRegex = new RegExp(
+    `^/${config.cmsAlias}/pages/[^/]+/edit/preview/$`
+  );
+  const previewAddRegex = new RegExp(
+    `^/${config.cmsAlias}/pages/add/[^/]+/[^/]+/[^/]+/preview/$`
+  );
 
-    const isPreviewEdit = previewEditRegex.test(path);
-    const isPreviewAdd = previewAddRegex.test(path);
-    const isPreview = isPreviewEdit || isPreviewAdd;
+  const isPreviewEdit = previewEditRegex.test(path);
+  const isPreviewAdd = previewAddRegex.test(path);
+  const isPreview = isPreviewEdit || isPreviewAdd;
 
-    return !(isPreview && ["HEAD", "OPTIONS", "GET"].includes(req.method));
+  return !(isPreview && ["HEAD", "OPTIONS", "GET"].includes(req.method));
 }
 
-const proxy = createProxyMiddleware(["/" + config.backAlias, "/" + config.cmsAlias], {
+const proxy = createProxyMiddleware(
+  ["/" + config.backAlias, "/" + config.cmsAlias],
+  {
     target: config.apiURL,
     changeOrigin: true,
-});
+  }
+);
 
 export default defineEventHandler(
-    (event) =>
+  (event) =>
     new Promise((resolve, reject) => {
-        const dummyUrl = new URL("http://localhost" + event.path);
-        const path = dummyUrl.pathname;
+      const dummyUrl = new URL("http://localhost" + event.path);
+      const path = dummyUrl.pathname;
 
-        if (getFromApi(path, event.node.req)) {
-            // @ts-ignore
-            proxy(event.node.req, event.node.res, (err) => {
-                if (err) {
-                    reject(err);
-                } else {
-                    resolve(undefined);
-                }
-            });
-        } else {
-            // Sending undefined is the only way for things to proceed smoothly
-            // Sending null or anything else doesn't work
+      if (getFromApi(path, event.node.req)) {
+        // @ts-ignore
+        proxy(event.node.req, event.node.res, (err) => {
+          if (err) {
+            reject(err);
+          } else {
             resolve(undefined);
-        }
+          }
+        });
+      } else {
+        // Sending undefined is the only way for things to proceed smoothly
+        // Sending null or anything else doesn't work
+        resolve(undefined);
+      }
     })
 );
