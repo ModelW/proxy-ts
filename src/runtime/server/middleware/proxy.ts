@@ -1,3 +1,4 @@
+import { useRuntimeConfig } from "#imports";
 import { createProxyMiddleware } from "http-proxy-middleware";
 import { defineEventHandler } from "h3";
 
