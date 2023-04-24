@@ -39,6 +39,7 @@
   },
   "dependencies": {
     "@nuxt/kit": "^3.4.1",
+    "defu": "^6.1.2",
     "h3": "^1.6.4",
     "http-proxy-middleware": "^2.0.6"
   },
