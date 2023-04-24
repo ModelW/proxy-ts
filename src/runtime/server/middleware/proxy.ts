@@ -1,3 +1,4 @@
+import { useRuntimeConfig } from "#imports";
 import { createProxyMiddleware } from "http-proxy-middleware";
 import { defineEventHandler } from "h3";
 
@@ -47,9 +48,9 @@ function getFromApi(path: string, req: any) {
 }
 
 const proxy = createProxyMiddleware(
-  ["/" + config.backAlias, "/" + config.cmsAlias],
+  ["/" + config.public.proxy.backAlias, "/" + config.public.proxy.cmsAlias],
   {
-    target: config.apiURL,
+    target: config.public.proxy.apiURL,
     changeOrigin: true,
   }
 );

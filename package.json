@@ -1,6 +1,6 @@
 {
   "name": "@model-w/proxy",
-  "version": "0.2.2",
+  "version": "0.3.0",
   "description": "Event Handler Proxy to make the redirections from Vue3 templates to the ServerTemplatedComponent render",
   "repository": {
     "type": "git",
@@ -39,6 +39,7 @@
   },
   "dependencies": {
     "@nuxt/kit": "^3.4.1",
+    "defu": "^6.1.2",
     "h3": "^1.6.4",
     "http-proxy-middleware": "^2.0.6"
   },
