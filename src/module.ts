@@ -1,4 +1,5 @@
 import { defineNuxtModule, createResolver, addServerHandler } from "@nuxt/kit";
+import { defu } from "defu";
 
 // Module options TypeScript interface definition
 export interface ModuleOptions {}
@@ -10,7 +11,12 @@ export default defineNuxtModule<ModuleOptions>({
   },
   // Default configuration options of the Nuxt module
   defaults: {},
-  setup() {
+  setup(options, nuxt) {
+    nuxt.options.runtimeConfig.public.proxy = defu(
+      nuxt.options.runtimeConfig.public.proxy,
+      options
+    );
+
     const resolver = createResolver(import.meta.url);
 
     // Do not add the extension since the `.ts` will be transpiled to `.mjs` after `npm run prepack`

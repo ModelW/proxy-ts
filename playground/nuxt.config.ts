@@ -1,7 +1,9 @@
 export default defineNuxtConfig({
-  runtimeConfig: {
-    apiURL: 'localhost:3000'
+  runtimeConfig: {},
+  modules: ["../src/module"],
+  proxy: {
+    apiURL: "http://localhost:8000",
+    backAlias: "back",
+    cmsAlias: "cms",
   },
-  modules: ['../src/module'],
-  myModule: {}
-})
+});
