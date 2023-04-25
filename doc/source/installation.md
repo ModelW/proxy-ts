@@ -1,12 +1,12 @@
 # Installation
 
-In order to install the Model W Proxy, you need to add it to the `package.json`, for example `"@model-w/proxy": "~0.3.0"`,
-or use the next command 
+You can install Model W Proxy in your project with the following command.
+
 ```shell
 npm install @model-w/proxy
 ```
 
-Then you can use it in your project modifying the `nuxt.config.ts` file. 
+Then, configure the module in the `nuxt.config.ts` file. 
 Here is a minimalistic example:
 
 ```typescript
