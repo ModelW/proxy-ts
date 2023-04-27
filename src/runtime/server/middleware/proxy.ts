@@ -70,7 +70,7 @@ function shouldUseProxy(
       continue;
     }
 
-    return filter.useProxy || true;
+    return filter.useProxy ?? true;
   }
 
   // If filters were specified, but none matched the current request, the proxy should be skipped
