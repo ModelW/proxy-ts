@@ -2,11 +2,11 @@ export default defineNuxtConfig({
   runtimeConfig: {},
   modules: ["../src/module"],
   proxy: {
-    context: ["/back", "/cms"],
     options: {
       target: process.env.API_URL,
       changeOrigin: true,
     },
+    forwardHost: true,
     filters: [
       {
         header: /x-reach-api:.+/,

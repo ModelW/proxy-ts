@@ -3,10 +3,28 @@ import { createProxyMiddleware } from "http-proxy-middleware";
 import { defineEventHandler } from "h3";
 
 const config = useRuntimeConfig();
+const proxyConfig = config.public.proxy;
+const proxyOptions: any = { ...proxyConfig.options };
+const existingOnProxyReq = proxyOptions.onProxyReq;
+
+if (proxyConfig.forwardHost) {
+  proxyOptions.onProxyReq = (proxyReq: any, req: any) => {
+    if (existingOnProxyReq) {
+      existingOnProxyReq(proxyReq, req);
+    }
+
+    const host = req.headers["x-forwarded-host"] || req.headers.host;
+
+    if (host) {
+      proxyReq.setHeader("x-forwarded-host", host);
+    }
+  };
+}
+
 const proxy = createProxyMiddleware(
   // @ts-ignore
   (pathname, req) => shouldUseProxy(req.headers, req.method, pathname),
-  config.public.proxy.options
+  proxyOptions
 );
 
 export default defineEventHandler(

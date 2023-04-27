@@ -15,8 +15,8 @@ export default defineNuxtConfig({
   proxy: {
     options: {
       target: process.env.API_URL,
-      changeOrigin: true,
     },
+    forwardHost: true,
     filters: [
       {
         header: /x-reach-api:.+/,
@@ -34,7 +34,10 @@ export default defineNuxtConfig({
 ```
 
 This module uses [`http-proxy-module`](https://github.com/chimurai/http-proxy-middleware/) under the hood.
+
 The `options` configuration point are passed directly to the underlying `createProxyMiddleware()` call.
+
+The `forwardHost` option automatically sets the `x-forwarded-host` header.
 
 The `filters` configuration allows for deciding what to proxy, and what not to proxy.
 Each filter can specify one or more of these options:
