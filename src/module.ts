@@ -17,6 +17,16 @@ export default defineNuxtModule<ModuleOptions>({
       options
     );
 
+    // RegExp's have to be serialized, otherwise Nuxt is going to transform them into `{}`
+    for (const filter of nuxt.options.runtimeConfig.public.proxy
+      .filters as any[]) {
+      for (const key of ["header", "method", "path"]) {
+        if (filter[key] instanceof RegExp) {
+          filter[key] = { regexp: filter[key].source };
+        }
+      }
+    }
+
     const resolver = createResolver(import.meta.url);
 
     // Do not add the extension since the `.ts` will be transpiled to `.mjs` after `npm run prepack`
