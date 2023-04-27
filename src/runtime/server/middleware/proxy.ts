@@ -2,78 +2,88 @@ import { useRuntimeConfig } from "#imports";
 import { createProxyMiddleware } from "http-proxy-middleware";
 import { defineEventHandler } from "h3";
 
-/**
- * This function decides if a request should be proxied to the API or not. Which
- * is:
- *
- * - When the request has the X-Reach-API header (aka the front-end is trying to
- *   directly reach the API)
- * - When the request is directed at /back
- * - When the request is directed at /cms
- * - Unless it's a forbidden pattern (aka a Wagtail preview page, which we want
- *   to render on Nuxt side like a regular CMS page, even though it's within the
- *   admin)
- * - Unless (lol) it's a POST request, in which case we want it to go through
- *   the proxy because that's how Wagtail communicates the content of its
- *   previews
- *
- * An optimization in production is to configure the load balancer to always
- * send requests targeting /back to the API.
- */
 const config = useRuntimeConfig();
-
-function getFromApi(path: string, req: any) {
-  if (req.headers["x-reach-api"]) {
-    return true;
-  }
-
-  const prefixes = [config.backAlias, config.cmsAlias].join("|");
-
-  if (!path.match(new RegExp(`^/(${prefixes})(/|$)`))) {
-    return false;
-  }
-
-  const previewEditRegex = new RegExp(
-    `^/${config.cmsAlias}/pages/[^/]+/edit/preview/$`
-  );
-  const previewAddRegex = new RegExp(
-    `^/${config.cmsAlias}/pages/add/[^/]+/[^/]+/[^/]+/preview/$`
-  );
-
-  const isPreviewEdit = previewEditRegex.test(path);
-  const isPreviewAdd = previewAddRegex.test(path);
-  const isPreview = isPreviewEdit || isPreviewAdd;
-
-  return !(isPreview && ["HEAD", "OPTIONS", "GET"].includes(req.method));
-}
-
 const proxy = createProxyMiddleware(
-  ["/" + config.public.proxy.backAlias, "/" + config.public.proxy.cmsAlias],
-  {
-    target: config.public.proxy.apiURL,
-    changeOrigin: true,
-  }
+  // @ts-ignore
+  (pathname, req) => shouldUseProxy(req.headers, req.method, pathname),
+  config.public.proxy.options
 );
 
 export default defineEventHandler(
   (event) =>
     new Promise((resolve, reject) => {
-      const dummyUrl = new URL("http://localhost" + event.path);
-      const path = dummyUrl.pathname;
-
-      if (getFromApi(path, event.node.req)) {
-        // @ts-ignore
-        proxy(event.node.req, event.node.res, (err) => {
-          if (err) {
-            reject(err);
-          } else {
-            resolve(undefined);
-          }
-        });
-      } else {
-        // Sending undefined is the only way for things to proceed smoothly
-        // Sending null or anything else doesn't work
-        resolve(undefined);
-      }
+      // @ts-ignore
+      proxy(event.node.req, event.node.res, (err) => {
+        if (err) {
+          reject(err);
+        } else {
+          resolve(undefined);
+        }
+      });
     })
 );
+
+/**
+ * This function determines whether requests should go through the proxy,
+ * according to whatever filters have been set up in the project.
+ * Filters are checked in the order they are defined, and the first match
+ * decides if the proxy is going to be used or not.
+ * @param headers The request headers
+ * @param method The request HTTP verb
+ * @param path The request path
+ */
+function shouldUseProxy(
+  headers: Record<string, any>,
+  method: string,
+  path: string
+): boolean {
+  const headersList = [];
+  const filters = config.public.proxy.filters as any[];
+
+  // If no filters are present, go through the proxy by default
+  if (!filters || filters.length === 0) {
+    return true;
+  }
+
+  for (const key of Object.keys(headers)) {
+    headersList.push(`${key}: ${headers[key]}`);
+  }
+
+  for (const filter of filters) {
+    if (
+      filter.header &&
+      !headersList.find((h) => isTesterMatching(filter.header, h))
+    ) {
+      continue;
+    }
+
+    if (filter.method && !isTesterMatching(filter.method, method)) {
+      continue;
+    }
+
+    if (
+      filter.path &&
+      !isTesterMatching(filter.path, path, (testValue, actualValue) =>
+        actualValue.startsWith(testValue)
+      )
+    ) {
+      continue;
+    }
+
+    return filter.useProxy || true;
+  }
+
+  // If filters were specified, but none matched the current request, the proxy should be skipped
+  return false;
+}
+
+function isTesterMatching(
+  testValue: string | { regexp: string },
+  actualValue: string,
+  compareStrings = (testValue: string, actualValue: string) =>
+    testValue === actualValue
+): boolean {
+  return typeof testValue === "string"
+    ? compareStrings(testValue, actualValue)
+    : new RegExp(testValue.regexp).test(actualValue);
+}

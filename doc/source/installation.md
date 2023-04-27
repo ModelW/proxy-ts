@@ -6,27 +6,43 @@ You can install Model W Proxy in your project with the following command.
 npm install @model-w/proxy
 ```
 
-Then, configure the module in the `nuxt.config.ts` file. 
+Then, configure the module in the `nuxt.config.ts` file.
 Here is a minimalistic example:
 
 ```typescript
-export default defineNuxtConfig(
-  {
-    modules: [
-        "@model-w/proxy"
+export default defineNuxtConfig({
+  modules: ["@model-w/proxy"],
+  proxy: {
+    options: {
+      target: process.env.API_URL,
+      changeOrigin: true,
+    },
+    filters: [
+      {
+        header: /x-reach-api:.+/,
+      },
+      {
+        path: /^\/proxy-me-please\/but-not-this-specific-path/,
+        useProxy: false,
+      },
+      {
+        path: "/proxy-me-please",
+      },
     ],
-    proxy: {
-        apiURL: process.env.API_URL,
-        backAlias: "back",
-        cmsAlias: "cms"
-    }
-  }
-)
+  },
+});
 ```
 
-The configuration options are the following:
-- `apiURL` is the base URL of the API you would like to reach
-- `backAlias` is the URL path prefix where requests should be making API calls (typically, something like `back` if your API resides under `http://example.org/back`)
-- `cmsAlias` is the URL path prefix of the Wagtail CMS (typically, something like `cms`)
+This module uses [`http-proxy-module`](https://github.com/chimurai/http-proxy-middleware/) under the hood.
+The `options` configuration point are passed directly to the underlying `createProxyMiddleware()` call.
 
-Once configuration is done, requests should be automatically proxied, independently of the client library used (fetch, axios...).
+The `filters` configuration allows for deciding what to proxy, and what not to proxy.
+Each filter can specify one or more of these options:
+- `header`: tested against all headers of the request, in the usual `x-some-option: some-value` form
+- `method`: filters requests using a specific HTTP verb (`GET`, `POST`...)
+- `path`: filters requests depending on their path
+- `useProxy`: `true` by default; when set to `false`, the filter will exclude requests from being proxied
+
+Requests match a filter only if they match all of its options independently.
+Every outbound request is tested against each filter in the order they are defined; the first matching filter is used to determine whether the request should be proxied or not, and the rest are skipped.
+If no filters were matched, the request will not be proxied.
