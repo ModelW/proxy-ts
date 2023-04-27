@@ -8,9 +8,9 @@ const proxyOptions: any = { ...proxyConfig.options };
 const existingOnProxyReq = proxyOptions.onProxyReq;
 
 if (proxyConfig.forwardHost) {
-  proxyOptions.onProxyReq = (proxyReq: any, req: any) => {
+  proxyOptions.onProxyReq = (proxyReq: any, req: any, ...args: any[]) => {
     if (existingOnProxyReq) {
-      existingOnProxyReq(proxyReq, req);
+      existingOnProxyReq(proxyReq, req, ...args);
     }
 
     const host = req.headers["x-forwarded-host"] || req.headers.host;
