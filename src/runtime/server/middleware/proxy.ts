@@ -5,14 +5,9 @@ import { defineEventHandler } from "h3";
 const config = useRuntimeConfig();
 const proxyConfig = config.public.proxy;
 const proxyOptions: any = { ...proxyConfig.options };
-const existingOnProxyReq = proxyOptions.onProxyReq;
 
 if (proxyConfig.forwardHost) {
-  proxyOptions.onProxyReq = (proxyReq: any, req: any, ...args: any[]) => {
-    if (existingOnProxyReq) {
-      existingOnProxyReq(proxyReq, req, ...args);
-    }
-
+  proxyOptions.onProxyReq = (proxyReq: any, req: any) => {
     const host = req.headers["x-forwarded-host"] || req.headers.host;
 
     if (host) {
