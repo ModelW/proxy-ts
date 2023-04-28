@@ -1,16 +1,29 @@
 {
   "name": "@model-w/proxy",
   "version": "1.0.0",
+  "type": "module",
   "description": "Event Handler Proxy to make the redirections from Vue3 templates to the ServerTemplatedComponent render",
+  "license": "WTFPL",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/ModelW/proxy-ts.git"
   },
-  "license": "WTFPL",
+  "homepage": "https://model-w-proxy.readthedocs.io/en/latest/",
   "bugs": {
     "url": "https://github.com/ModelW/proxy-ts/issues"
   },
-  "type": "module",
+  "author": "Rémy Sanchez (@xowap)",
+  "contributors": [
+    "Laurent Treguier",
+    "Ivan Lorenzo"
+  ],
+  "keywords": [
+    "proxy",
+    "nuxt3",
+    "wagtail",
+    "model-w",
+    "modelw"
+  ],
   "exports": {
     ".": {
       "types": "./dist/types.d.ts",
@@ -19,14 +32,10 @@
     }
   },
   "main": "./dist/module.cjs",
-  "homepage": "https://github.com/ModelW/proxy-ts#readme",
   "types": "./dist/types.d.ts",
   "files": [
     "dist"
   ],
-  "engines": {
-    "node": ">=16.0.0"
-  },
   "scripts": {
     "prepack": "nuxt-module-build",
     "dev": "nuxi dev playground",
@@ -36,6 +45,9 @@
     "lint": "eslint nuxt-module",
     "test": "vitest run",
     "test:watch": "vitest watch"
+  },
+  "engines": {
+    "node": ">=16.0.0"
   },
   "dependencies": {
     "@nuxt/kit": "^3.4.2",
@@ -52,9 +64,5 @@
     "eslint": "^8.39.0",
     "nuxt": "^3.4.2",
     "vitest": "^0.30.1"
-  },
-  "contributors": [
-    "Laurent Treguier",
-    "Ivan Lorenzo"
-  ]
+  }
 }
