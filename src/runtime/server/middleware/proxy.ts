@@ -3,7 +3,7 @@ import { createProxyMiddleware } from "http-proxy-middleware";
 import { defineEventHandler } from "h3";
 
 const config = useRuntimeConfig();
-const proxyConfig = config.public.proxy;
+const proxyConfig = config.proxy;
 const proxyOptions: any = { ...proxyConfig.options };
 
 if (proxyConfig.forwardHost) {
@@ -51,7 +51,7 @@ function shouldUseProxy(
   path: string
 ): boolean {
   const headersList = [];
-  const filters = config.public.proxy.filters as any[];
+  const filters = config.proxy.filters as any[];
 
   // If no filters are present, go through the proxy by default
   if (!filters || filters.length === 0) {
