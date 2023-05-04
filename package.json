@@ -1,6 +1,6 @@
 {
   "name": "@model-w/proxy",
-  "version": "2.0.0",
+  "version": "2.0.1",
   "type": "module",
   "description": "Event Handler Proxy to make the redirections from Vue3 templates to the ServerTemplatedComponent render",
   "license": "WTFPL",
@@ -63,6 +63,6 @@
     "changelogen": "^0.5.3",
     "eslint": "^8.39.0",
     "nuxt": "^3.4.3",
-    "vitest": "^0.31.0"
+    "vitest": "^0.30.1"
   }
 }
