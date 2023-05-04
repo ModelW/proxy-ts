@@ -12,14 +12,13 @@ export default defineNuxtModule<ModuleOptions>({
   // Default configuration options of the Nuxt module
   defaults: {},
   setup(options, nuxt) {
-    nuxt.options.runtimeConfig.public.proxy = defu(
-      nuxt.options.runtimeConfig.public.proxy,
+    nuxt.options.runtimeConfig.proxy = defu(
+      nuxt.options.runtimeConfig.proxy,
       options
     );
 
     // RegExp's have to be serialized, otherwise Nuxt is going to transform them into `{}`
-    for (const filter of nuxt.options.runtimeConfig.public.proxy
-      .filters as any[]) {
+    for (const filter of nuxt.options.runtimeConfig.proxy.filters as any[]) {
       for (const key of ["header", "method", "path"]) {
         if (filter[key] instanceof RegExp) {
           filter[key] = { regexp: filter[key].source };

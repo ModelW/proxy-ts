@@ -33,9 +33,11 @@ export default defineNuxtConfig({
 });
 ```
 
-This module uses [`http-proxy-module`](https://github.com/chimurai/http-proxy-middleware/) under the hood.
+This module uses [`http-proxy-middleware`](https://github.com/chimurai/http-proxy-middleware/) under the hood.
 
 The `options` configuration point are passed directly to the underlying `createProxyMiddleware()` call.
+Note that because Nuxt serializes and deserializes configuration options, setting functions will have no effect.
+Therefore, specifying `onProxyReq()` or any other function supported by `http-proxy-middleware` will have no effect.
 
 The `forwardHost` option automatically sets the `x-forwarded-host` header.
 
